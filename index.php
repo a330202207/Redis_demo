@@ -108,16 +108,18 @@
                                 <a href="edit.php?id=<?php echo $v['uid'] ?>"><img src="images/edit.png" border="0"/></a>
                                 <a href="del.php?id=<?php echo $v['uid'] ?>"><img src="images/trash.gif" border="0"/></a>
                             </td>
-                            <td>加关注/取消关注</a></td>
+                            <td>
+                                <?php if (!empty($_COOKIE['auth']) && $id != $v['uid']){ ?>
+                                    <a href="addfans.php?id=<?php echo $v['uid'] ?>&uid=<?php echo $id ?>">加关注</a></td>
+                                <?php } ?>
+                            </td>
                         </tr>
                     <?php } ?>
                     </tbody>
                 </table>
 
                 <div class="form_sub_buttons">
-                    <input type="button" class="follow" value="关注">
                     <input type="button" class="del" value="删除">
-                    <input type="button" class="edit" value="编辑">
                 </div>
             </div>
         </div><!-- end of right content-->
@@ -169,7 +171,7 @@
         var tmp = $("[name=user_id]:checkbox");
         $("#checkAll").attr("checked", tmp.length == tmp.filter(':checked'.length))
     });
-    $(".del").click(function (e) {
+    $(".del").click(function () {
 
         var ids = "";
 
@@ -177,14 +179,13 @@
             ids += "," + $(this).val();
         });
 
-        ids.substr(1);
+        ids = ids.substring(1);
 
         if (ids == '' || ids == undefined) {
             alert("请选择后再操作！");
+            return false;
         }
-
-        window.location.href = location.protocol +"del.php?id=";
-
+        window.location.href = location.protocol +"del.php?id=" + ids;
     });
 </script>
 </html>

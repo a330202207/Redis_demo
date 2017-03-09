@@ -1,8 +1,11 @@
 <?php
 require_once("redis.php");
-$uid = $_GET['id'];
-$redis->delKey("user:" . $uid);
+$uids = explode(',', $_GET['id']);
 
-//删除链表中uid
-$redis->lRem("uid", $uid);
+foreach ($uids as $key) {
+    $redis->delKey("user:" . $key);
+    //删除链表中uid
+    $redis->lRem("uid", $key);
+}
+
 header("location:index.php");

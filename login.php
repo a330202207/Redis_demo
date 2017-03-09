@@ -20,5 +20,7 @@ if (!empty($id)) {
         //设置cookie时间
         setcookie("auth", $auth, time() + 86400);
         header("location:index.php");
+    } else {
+        echo "密码错误!";
     }
 }
