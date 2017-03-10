@@ -109,8 +109,11 @@
                                 <a href="del.php?id=<?php echo $v['uid'] ?>"><img src="images/trash.gif" border="0"/></a>
                             </td>
                             <td>
-                                <?php if (!empty($_COOKIE['auth']) && $id != $v['uid']){ ?>
-                                    <a href="addfans.php?id=<?php echo $v['uid'] ?>&uid=<?php echo $id ?>">加关注</a></td>
+                                <?php
+                                    $data = $redis->sMembers("user:" . $id . ":following");
+                                    if (!empty($_COOKIE['auth']) && $id != $v['uid']){ ?>
+                                        var_dump($v);
+<!--                                    <a href="addfans.php?id=--><?php //echo $v['uid'] ?><!--&uid=--><?php //echo $id ?><!--">加关注</a>-->
                                 <?php } ?>
                             </td>
                         </tr>
@@ -129,7 +132,7 @@
             <h2>我关注了谁</h2>
             <ul>
                 <?php
-                $data = $redis->sMembers("user:" . $id . ":following");
+
                 foreach ($data as $v) {
                     $row = $redis->hGetAll("user:" . $v);
                 ?>

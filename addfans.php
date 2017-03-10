@@ -1,5 +1,5 @@
 <?php
-require("redis.php");
+require_once("redis.php");
 $id  = $_GET['id'];
 $uid = $_GET['uid'];
 

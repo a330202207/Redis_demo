@@ -19,10 +19,25 @@ class RedisAction extends RedisBase
         $this->redis->close();
     }
 
+#================================================= String(字符串) ======================
+
+    /**
+     * 将 value 追加到 key 原来的值的末尾
+     * key 不存在，将给定 key 设为 value
+     * @param   string  $key
+     * @param   string  $value
+     * @return  int:    追加 value 之后， key 中字符串的长度
+     */
+    public function append($key, $value)
+    {
+        return $this->redis->append($key, $value);
+    }
+
     /**
      * 原子性递增一个key的值
-     * @param string $key
-     * @param number $value
+     * @param   string    $key    key
+     * @param   int       $value  增量
+     * @return  int:      加上 value 之后，key 的值
      */
     public function incr($key, $value = 0)
     {
@@ -37,8 +52,9 @@ class RedisAction extends RedisBase
 
     /**
      * 原子性递减一个key的值
-     * @param string $key
-     * @param number $value
+     * @param   string    $key    key
+     * @param   int       $value  减量
+     * @return  int       减去 value 之后，key 的值
      */
     public function decr($key, $value = 0)
     {
@@ -53,8 +69,9 @@ class RedisAction extends RedisBase
 
     /**
      * 存储值到指定的key中
-     * @param string $key
-     * @param string $value
+     * @param string  $key
+     * @param string  $value
+     * @return  bool: TRUE 添加成功
      */
     public function setKey($key, $value)
     {
@@ -64,19 +81,21 @@ class RedisAction extends RedisBase
     /**
      * 获取指定key中存储的值
      * @param string $key
+     * @return  string|bool: 如果 key 不存在，返回FALSE,否则返回 key 中存储的值
      */
     public function getKey($key)
     {
         return $this->redis->get($key);
     }
-
+#======================================================== Key(键) ===============
     /**
      * 从Redis中删除指定的key
-     * @param string $key Redis key
+     * @param string|array
+     * @return int 被删除 key 的数量
      */
-    public function delKey($key)
+    public function delKey($keys)
     {
-        return $this->redis->delete($key);
+        return $this->redis->del($keys);
     }
 
     /**
@@ -293,13 +312,35 @@ class RedisAction extends RedisBase
     }
 
     /**
-     * 获取与该Key关联的Set中所有的成员。
-     * @param string $key
-     *
+     * 返回集合 key 中的所有成员
+     * @param  string $key
+     * @return array
      */
     public function sMembers($key)
     {
         return $this->redis->sMembers($key);
+    }
+
+    /**
+     * 判断 value 是否存在 key 集合
+     * @param   string  $key
+     * @param   string  $value
+     * @return  bool
+     */
+    public function sIsMember($key, $value)
+    {
+        return $this->redis->sIsMember($key, $value);
+    }
+
+    /**
+     * 移除集合 key 中的一个或多个 value 元素
+     * @param   string  $key
+     * @param   string  $value
+     * @return  int     返回删除成功元素的数量
+     */
+    public function sRem($key, $value)
+    {
+        return $this->redis->sRem($key, $value);
     }
 }
 
