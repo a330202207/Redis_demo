@@ -1,4 +1,4 @@
-这是一个Redis实例Demo，实现了Redis的增、删、改、查
+这是一个Redis实例Demo，实现了Redis的增、删、改、查，功能逻辑性上不完善，Redis连接配置在RedisBase.class.php文件中
 
 **功能点:**
 
