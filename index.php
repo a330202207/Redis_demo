@@ -111,10 +111,18 @@
                             <td>
                                 <?php
                                     $data = $redis->sMembers("user:" . $id . ":following");
-                                    if (!empty($_COOKIE['auth']) && $id != $v['uid']){ ?>
-                                        var_dump($v);
-<!--                                    <a href="addfans.php?id=--><?php //echo $v['uid'] ?><!--&uid=--><?php //echo $id ?><!--">加关注</a>-->
-                                <?php } ?>
+                                    if (!empty($_COOKIE['auth']) && $id != $v['uid']) {
+                                        if (in_array($v['uid'], $data)) {
+                                ?>
+                                        <a href="cancelfans.php?id=<?php echo $v['uid'] ?>&uid=<?php echo $id ?>">取消关注</a>
+                                        <?php
+                                        } else {
+                                        ?>
+                                        <a href="addfans.php?id=<?php echo $v['uid'] ?>&uid=<?php echo $id ?>">加关注</a>
+                                        <?php } ?>
+                                <?php
+                                    }
+                                ?>
                             </td>
                         </tr>
                     <?php } ?>

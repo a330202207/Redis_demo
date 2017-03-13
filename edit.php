@@ -16,7 +16,7 @@ $data = $redis->hGetAll("user:" . $uid);
 <form action="doedit.php" method="post">
     <div id="loginpanelwrap">
         <div class="loginheader">
-            <div class="logintitle"><a href="">注册</a></div>
+            <div class="logintitle"><a href="">编辑</a></div>
         </div>
         <div class="loginform">
             <div class="loginform_row">
