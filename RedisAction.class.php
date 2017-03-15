@@ -20,6 +20,7 @@ class RedisAction extends RedisBase
     }
 
 #======================================================== Key(键) ======================================================
+
     /**
      * 从Redis中删除指定的key
      * @param   string | array
@@ -42,8 +43,8 @@ class RedisAction extends RedisBase
 
     /**
      * 设置key过期时间，以秒为单位
-     * @param  string  $key 要设置过期时间的key
-     * @param  int     $expireTime 过期时间,秒为单位，例如设置有效期为1小时，$expireTime = 3600
+     * @param  string  $key         要设置过期时间的key
+     * @param  int     $expireTime  过期时间,秒为单位，例如设置有效期为1小时，$expireTime = 3600
      * @return bool    成功返回 TRUE，失败返回 FALSE
      */
     public function setExpireTime($key, $expireTime)
@@ -92,7 +93,6 @@ class RedisAction extends RedisBase
     {
         return $this->redis->get($key);
     }
-
 
     /**
      * 原子性递增一个 key 的值
@@ -162,7 +162,6 @@ class RedisAction extends RedisBase
     {
         return $this->redis->strlen($key);
     }
-
 
 #======================================================== Hash（哈希表）==================================================
 
@@ -274,7 +273,7 @@ class RedisAction extends RedisBase
      * @param   string  $hash
      * @param   string  $key
      * @param   string  $value
-     * @return  bool    设置成功返回 TRUE，失败返回 FALSE
+     * @return  bool
      */
     public function hSetNx($hash, $key, $value)
     {
@@ -284,88 +283,141 @@ class RedisAction extends RedisBase
     /**
      * 获取 Hash 表 key 中所有域的值
      * @param   string  $key
-     * @return  array   当 key 不存在时，返回一个空表
+     * @return  array
+     * 当 key 不存在时，返回一个空表
      */
     public function hVals($key)
     {
         return $this->redis->hVals($key);
     }
 
-
-#======================================================== SortedSet（有序集合）===========================================
-    /**
-     * 向指定的有序集合中添加成员
-     * @param string $key 有序集合的key
-     * @param string $member 成员的名称
-     * @param unknown $score 成员的score
-     */
-    public function zAdd($key, $member, $score)
-    {
-        return $this->redis->zAdd($key, $score, $member);
-    }
-
-
-    /**
-     * 获取指定名称的成员的score值
-     * @param unknown $key 有序集合key
-     * @param unknown $member 要获取soce的成员名称
-     */
-    public function zScore($key, $member)
-    {
-        return $this->redis->zScore($key, $member);
-    }
-
-    /**
-     * 从指定的有序集合中删除成员
-     * @param string $key 集合的key
-     * @param string $member 要删除的成员名称
-     */
-    public function zDelete($key, $member)
-    {
-        return $this->redis->zDelete($key, $member);
-    }
-
-    /**
-     * 从有序集合中获取指定范围成员的值
-     * @param string $key 要获取的有序集合的key
-     * @param int $start 获取成员的起始位置
-     * @param int $end 获取成员的结束位置
-     * @param int $order 1按照score 倒序排列结果， 0 按score 正序排列结果
-     * @param bool $withScore 是否返回score
-     */
-    public function getRange($key, $start, $end, $withScore = TRUE, $order = 1)
-    {
-        if ($order == 1) {
-            return $this->redis->zRevRange($key, $start, $end, $withScore);
-        } else {
-            return $this->redis->zRange($key, $start, $end, $withScore);
-        }
-    }
-
-    /**
-     * 以原子性增加成员的score值
-     * @param string $key 有序集合的key
-     * @param string $member 要增加score的成员名称
-     * @param int $increment 要增加的score值（可以转换成双精度的值，可以为负数，负数就减去相应的值）
-     */
-    public function zIncrBy($key, $member, $increment = 1)
-    {
-        return $this->redis->zIncrBy($key, $increment, $member);
-    }
-
-
 #======================================================== List（列表） ==================================================
+
+    /**
+     * 获取 列表 key 中，下标为 index 的元素
+     * @param   string  $key
+     * @param   int     $index
+     * @return  String
+     * 如果 index 参数的值不在列表的区间范围内(out of range)，返回 FALSE
+     */
+    public function lIndex($key, $index)
+    {
+        return $this->redis->lIndex($key, $index);
+    }
+
+    /**
+     * 将值 value 插入到列表 key 当中，位于值 pivot 之前或之后
+     * @param   string  $key
+     * @param   int     $type   1:AFTER，其他:BEFORE
+     * @param   string  $pivot
+     * @param   string  $value
+     * @return  int     返回插入操作完成之后，列表的长度
+     * 如果没有找到 pivot ，返回 -1
+     * 如果 key 不存在或为空列表，返回 0
+     */
+    public function lInsert($key, $type, $pivot, $value)
+    {
+        $type = $type == 1 ?  Redis::AFTER : Redis::BEFORE;
+        return $this->redis->lInsert($key, $type, $pivot, $value);
+    }
+
+    /**
+     * 获取列表 key 的长度
+     * @param   string  $key
+     * @return  int     列表 key 的长度
+     */
+    public function lLen($key)
+    {
+        return $this->redis->lLen($key);
+    }
+
+    /**
+     * 删除列表的第一个元素
+     * @param   string  $key
+     * @return  string  返回列表的头元素
+     * 当 key 不存在时，返回 FALSE
+     */
+    public function lPop($key)
+    {
+        return $this->redis->lPop($key);
+    }
+
     /**
      * 将一个或多个值 value 插入到列表 key 的表头
      * @param   string  $key
      * @param   string  $value
-     * @return  int      执行 lPush 操作后，列表的长度
+     * @return  int     返回执行 lPush 操作后，列表的长度
      * 如果 key 不存在，一个空列表会被创建并执行 lPush 操作
      * 当 key 存在但不是列表类型时，返回 FALSE
      */
     public function lPush($key, $value)
     {
         return $this->redis->lPush($key, $value);
+    }
+
+    /**
+     * 当 key 存在并且是一个列表时，将 value 插入到列表 key 的表头
+     * @param   string  $key
+     * @param   string  $value
+     * @return  int     返回执行 lPushx 操作后，列表的长度
+     * 如果 key 不存在，lPushx 命令什么也不做
+     * 当 key 存在但不是列表类型时，返回 FALSE
+     */
+    public function lPushx($key, $value)
+    {
+        return $this->redis->lPushx($key, $value);
+    }
+
+    /**
+     * 获取列表 key 中指定区间内的元素，区间以偏移量 start 和 end 指定。
+     * @param   string  $key
+     * @param   int     $start  获取成员的起始位置
+     * @param   int     $end    获取成员的结束位置
+     * @return  array   返回指定区间内的元素
+     */
+    public function lRange($key, $start, $end)
+    {
+        return $this->redis->lRange($key, $start, $end);
+    }
+
+    /**
+     * 根据 count 的值，移除列表中与 value 相等的元素
+     * @param   string  $key
+     * @param   string  $value
+     * @param   int     $count
+     * @return  int     被移除元素的数量
+     * count > 0 : 从表头开始向表尾搜索，移除与 value 相等的元素，数量为 count
+     * count < 0 : 从表尾开始向表头搜索，移除与 value 相等的元素，数量为 count 的绝对值
+     * count = 0 : 移除表中所有与 value 相等的值
+     * 因为不存在的 key 被视作空表(empty list)，所以当 key 不存在时， lRem 命令总是返回 0 。
+     */
+    public function lRem($key, $value, $count = 0)
+    {
+        return $this->redis->lRem($key, $value, $count);
+    }
+
+    /**
+     * 将列表 key 下标为 index 的元素的值设置为 value
+     * @param   string  $key
+     * @param   int     $index
+     * @param   int     $value
+     * @return  bool
+     * 当 index 参数超出范围，或对一个空列表( key 不存在)进行 lSet 时，返回 FALSE
+     */
+    public function lSet($key, $index, $value)
+    {
+        return $this->redis->lSet($key, $index, $value);
+    }
+
+    /**
+     * 删除 List 的最后一个元素
+     * @param   string  $key
+     * @return  string  返回列表的尾元素
+     * 当 key 不存在时，返回 FALSE
+     */
+    public function rPop($key)
+    {
+        return $this->redis->rPop($key);
     }
 
     /**
@@ -382,66 +434,22 @@ class RedisAction extends RedisBase
     }
 
     /**
-     * 获取列表 key 中指定区间内的元素，区间以偏移量 start 和 end 指定。
-     * @param   string $key
-     * @param   int    $start  获取成员的起始位置
-     * @param   int    $end    获取成员的结束位置
-     * @return  array  返回指定区间内的元素
-     */
-    public function lRange($key, $start, $end)
-    {
-        return $this->redis->lRange($key, $start, $end);
-    }
-
-    /**
-     * 获取列表 key 的长度
-     * @param   string  $key
-     * @return  int     列表 key 的长度
-     */
-    public function lLen($key)
-    {
-        return $this->redis->lLen($key);
-    }
-
-    /**
-     * 根据 count 的值，移除列表中与 value 相等的元素
+     * 当 key 存在并且是一个列表时，将 value 插入到列表 key 的表尾(最右边)
      * @param   string  $key
      * @param   string  $value
-     * @param   int     $count
-     * @return  int     被移除元素的数量
-     * count > 0 : 从表头开始向表尾搜索，移除与 value 相等的元素，数量为 count
-     * count < 0 : 从表尾开始向表头搜索，移除与 value 相等的元素，数量为 count 的绝对值
-     * count = 0 : 移除表中所有与 value 相等的值
-     * 因为不存在的 key 被视作空表(empty list)，所以当 key 不存在时， LREM 命令总是返回 0 。
+     * @return  int     执行 rPushx 操作后，列表的长度
+     * 如果 key 不存在，rPushx 命令什么也不做
+     * 当 key 存在但不是列表类型时，返回 FALSE
      */
-    public function lRem($key, $value, $count = 0)
+    public function rPushx($key, $value)
     {
-        return $this->redis->lRem($key, $value, $count);
-    }
-
-    /**
-     * 删除 List 的第一个元素
-     * @param   string  $key
-     * @return  string  返回列表的头元素。当 key 不存在时，返回 FALSE
-     */
-    public function lPop($key)
-    {
-        return $this->redis->lPop($key);
-    }
-
-    /**
-     * 删除 List 的最后一个元素
-     * @param   string  $key
-     * @return  string  返回列表的尾元素。当 key 不存在时，返回 FALSE
-     */
-    public function rPop($key)
-    {
-        return $this->redis->rPop($key);
+        return $this->redis->rPushx($key, $value);
     }
 
 #======================================================== Set（集合）====================================================
+
     /**
-     * 将一个或多个 value 值加入到集合 key 当中，已经存在于集合的 value 值将被忽略。
+     * 将一个或多个 value 值加入到集合 key 当中，已经存在于集合的 value 值将被忽略
      * @param   string  $key
      * @param   string  $value
      * @return  int     被添加到集合中的新元素的数量，不包括被忽略的元素。
@@ -452,13 +460,39 @@ class RedisAction extends RedisBase
     }
 
     /**
-     * 获取集合 key 中的所有成员
+     * 获取集合 key 的基数(集合中元素的数量)
      * @param   string  $key
-     * @return  array
+     * @return  int
+     * 当 key 不存在时，返回 0
      */
-    public function sMembers($key)
+    public function sCard($key)
     {
-        return $this->redis->sMembers($key);
+        return $this->redis->sCard($key);
+    }
+
+    /**
+     * 获取集合 key1 与 key2 的差集
+     * @param   string  $key1
+     * @param   string  $key2
+     * @return  array
+     * 当 key 不存在时为空集
+     */
+    public function sDiff($key1, $key2)
+    {
+        return $this->redis->sDiff($key1, $key2);
+    }
+
+    /**
+     * 获取集合 key1 与 key2 的交集
+     * @param   string  $key1
+     * @param   string  $key2
+     * @return  array
+     * 当 key 不存在时为空集
+     * 当 key1 或者 key2 其中为一个空集时，结果也为空集
+     */
+    public function sInter($key1, $key2)
+    {
+        return $this->redis->sInter($key1, $key2);
     }
 
     /**
@@ -473,7 +507,17 @@ class RedisAction extends RedisBase
     }
 
     /**
-     * 移除集合 key 中的一个或多个 value 元素
+     * 获取集合 key 中的所有成员
+     * @param   string  $key
+     * @return  array
+     */
+    public function sMembers($key)
+    {
+        return $this->redis->sMembers($key);
+    }
+
+    /**
+     * 删除集合 key 中的一个或多个 value 元素
      * @param   string  $key
      * @param   string  $value
      * @return  int     返回删除成功元素的数量
@@ -482,6 +526,108 @@ class RedisAction extends RedisBase
     {
         return $this->redis->sRem($key, $value);
     }
-}
 
+    /**
+     * 获取集合 key1 与 key2 的并集
+     * @param   string  $key1
+     * @param   string  $key2
+     * @return  array
+     * 当 key 不存在时为空集
+     */
+    public function sUnion($key1, $key2)
+    {
+        return $this->redis->sUnion($key1, $key2);
+    }
+
+#======================================================== SortedSet（有序集合）===========================================
+
+    /**
+     * 将一个或多个 member 元素及其 score 值加入到有序集合 key
+     * @param   string     $key
+     * @param   int|float  $score
+     * @param   string     $member
+     * @return  int
+     * 如果 key 不存在，则创建一个空的有序集合并执行 zAdd 操作
+     * 当 key 存在但不是有序集类型时，返回 FALSE
+     */
+    public function zAdd($key, $score, $member)
+    {
+        return $this->redis->zAdd($key, $score, $member);
+    }
+
+    /**
+     * 获取有序集合 key 的基数
+     * @param   string  $key
+     * @return  int
+     * 当 key 不存在时，返回0
+     */
+    public function zCard($key)
+    {
+        return $this->redis->zCard($key);
+    }
+
+    /**
+     * 获取有序集合 key 中， score 值在 min 和 max 之间(默认包括 score 值等于 min 或 max )的成员的数量
+     * @param   string  $key
+     * @param   string  $start
+     * @param   string  $end
+     * @return  int
+     */
+    public function zCount($key, $start, $end)
+    {
+        return $this->redis->zCount($key, $start, $end);
+    }
+
+    /**
+     * 删除有序集合指定的成员
+     * @param   string  $key
+     * @param   string  $member
+     * @return  int     返回删除数量
+     */
+    public function zDelete($key, $member)
+    {
+        return $this->redis->zDelete($key, $member);
+    }
+
+    /**
+     * 获取有序集合 key 中，指定区间内的成员
+     * @param   string  $key
+     * @param   int     $start
+     * @param   int     $end
+     * @param   bool    $withScore  是否返回 score
+     * @param   int     $order      1按照 score 倒序排列结果， 0 按 score 正序排列结果
+     * @return  array
+     */
+    public function zRange($key, $start, $end, $withScore = TRUE, $order = 1)
+    {
+        if ($order == 1) {
+            return $this->redis->zRevRange($key, $start, $end, $withScore);
+        } else {
+            return $this->redis->zRange($key, $start, $end, $withScore);
+        }
+    }
+
+    /**
+     * 获取有序集 key 中，成员 member 的 score 值
+     * @param   string  $key
+     * @param   string  $member
+     * @return  string|float   返回 member 成员的 score 值
+     */
+    public function zScore($key, $member)
+    {
+        return $this->redis->zScore($key, $member);
+    }
+
+    /**
+     * 以原子性增加成员的score值
+     * @param   string  $key        有序集合的 key
+     * @param   string  $member     要增加 score 的成员名称
+     * @param   int     $increment  要增加的 score 值（可以转换成双精度的值，可以为负数，负数就减去相应的值）
+     * @return  string|float        返回 member 成员的新 score 值
+     */
+    public function zIncrBy($key, $member, $increment = 1)
+    {
+        return $this->redis->zIncrBy($key, $increment, $member);
+    }
+}
 ?>
