@@ -20,12 +20,12 @@ class RedisBase
             $this->redis = new Redis();
             $rCon = $this->redis->connect($this->host, $this->port);
             if (!$rCon) {
-                throw new Exception('连接Reis服务器失败！host:' . $this->host . '，port:' . $this->port);
+                throw new Exception('连接 Redis 服务器失败！host:' . $this->host . '，port:' . $this->port);
             }
 
             $this->redis->auth($this->auth);
         } catch (Exception $e) {
-            throw new Exception('实例化Redis对象失败！');
+            throw new Exception('实例化 Redis 对象失败！');
         }
     }
 

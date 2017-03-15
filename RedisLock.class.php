@@ -21,7 +21,7 @@ class RedisLock extends RedisBase
             $this->setSleepTime();
             $this->setMaxTryNum();
         } catch (Exception $e) {
-            throw new Exception('连接Reis服务器失败！');
+            throw new Exception('连接 Redis 服务器失败！');
         }
     }
 
