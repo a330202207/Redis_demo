@@ -14,7 +14,7 @@
         <?php
         require_once("redis.php");
         if (!empty($_COOKIE['auth'])) {
-        $id = $redis->getKey("auth:" . $_COOKIE['auth']);
+        $id = $redis->get("auth:" . $_COOKIE['auth']);
         $name = $redis->hGet("user:" . $id, "username");
         ?>
             <div class="header_right">欢迎您！ <?php echo $name ?>,<a href="logout.php" class="logout">注销</a>
@@ -59,7 +59,7 @@
     * lrange 6 8  3
     */
 
-    $ids = $redis->lrangeList("uid", ($page_num - 1) * $page_size, (($page_num - 1) * $page_size + $page_size - 1));
+    $ids = $redis->lRange("uid", ($page_num - 1) * $page_size, (($page_num - 1) * $page_size + $page_size - 1));
 
     foreach ($ids as $v) {
         $data[] = $redis->hGetAll("user:" . $v);

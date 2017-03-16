@@ -4,7 +4,7 @@ require_once("redis.php");
 $username = $_POST['username'];
 $pass     = $_POST['password'];
 
-$id  = $redis->getKey("username:" . $username);
+$id  = $redis->get("username:" . $username);
 
 if (!empty($id)) {
 
@@ -15,7 +15,7 @@ if (!empty($id)) {
 
         $auth = md5(time() . $username . rand());
 
-        $redis->setKey("auth:" . $auth, $id);
+        $redis->set("auth:" . $auth, $id);
 
         //设置cookie时间
         setcookie("auth", $auth, time() + 86400);
