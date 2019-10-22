@@ -8,7 +8,7 @@ $password = md5($_POST['password']);
 $uid = $redis->incr("userid");
 $redis->hMset("user:" . $uid, array("uid" => $uid, 'username' => $username, "password" => $password));
 
-//用户id存入链表
+//用户id存入列表
 $redis->rpush("uid", $uid);
 $redis->set("username:" . $username, $uid);
 
